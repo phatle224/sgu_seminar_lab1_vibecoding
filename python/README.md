@@ -139,7 +139,7 @@ curl -X POST http://localhost:8000/api/posts/1/comments \
 ```bash
 curl -X POST http://localhost:8000/api/posts/1/likes \
   -H "Content-Type: application/json" \  
-  -d '{"username": "alice"}'
+  -d '{"username": "alice"}' 
 ```
 
 ## Key Features Implemented
