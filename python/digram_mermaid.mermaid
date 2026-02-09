@@ -1,0 +1,124 @@
+graph TD
+    %% --- ĐỊNH NGHĨA STYLE ---
+    classDef default font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, font-size:13px;
+
+    %% 1. Terminal Commands (Màu tối)
+    classDef terminal fill:#1e293b,stroke:#334155,stroke-width:1px,color:#e2e8f0,rx:4,ry:4,font-family:'Consolas',monospace,align:left;
+    %% 2. AI Actions & Prompts (Màu xanh dương)
+    classDef ai fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a,rx:6,ry:6,align:left;
+    %% 3. Checks & Decisions (Hình thoi)
+    classDef check fill:#fffbeb,stroke:#f59e0b,stroke-width:2px,color:#92400e,shape:diamond,align:center;
+    %% 4. Positive Results (Màu xanh lá)
+    classDef result fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b,rx:4,ry:4,align:left;
+    %% 5. Database Storage (Hình trụ)
+    classDef db fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#0f172a,shape:cylinder,align:center;
+    %% 6. Technical Notes (Ghi chú)
+    classDef note fill:#fefce8,stroke:#ca8a04,stroke-width:1px,color:#854d0e,stroke-dasharray: 5 5,align:left;
+    %% 7. API Documentation Group (Màu tím nhạt - Căn trái)
+    classDef api_group fill:#f3e8ff,stroke:#7e22ce,stroke-width:2px,color:#3b0764,align:left;
+    %% 8. Process Steps
+    classDef process fill:#f8fafc,stroke:#94a3b8,stroke-width:1px,color:#0f172a,rx:4,ry:4,align:left;
+
+    Start([BẮT ĐẦU DỰ ÁN BACKEND]) ==> Phase1
+
+    %% --- GIAI ĐOẠN 1 ---
+    subgraph Phase1 [Giai đoạn 1 - Thiết lập Môi trường Cơ bản]
+        direction TB
+        P1_Step1["1. Xác định thư mục gốc:<br/>$ REPOSITORY_ROOT=$(git rev-parse --show-toplevel)"]:::terminal
+        P1_Step2["2. Kiểm tra đường dẫn:<br/>Output: /workspaces/github-copilot..."]:::terminal
+        P1_Step3["3. Sao chép Custom Instructions:<br/>$ cp -r docs/custom-instructions/python/. .github/"]:::terminal
+        
+        P1_Note[/"Ghi chú: Dùng cú pháp /. để sao chép<br/>cả file ẩn (hidden files)"/]:::note
+
+        P1_Step1 --> P1_Step2
+        P1_Step2 --> P1_Step3
+        P1_Step3 -.-> P1_Note
+    end
+
+    Phase1 ==> Phase2
+
+    %% --- GIAI ĐOẠN 2 ---
+    subgraph Phase2 [Giai đoạn 2 - Tạo Môi trường Ảo venv]
+        direction TB
+        P2_Check1{"Kiểm tra<br/>Agent Mode"}:::check
+        P2_Check2{"Kiểm tra<br/>MCP Server"}:::check
+        
+        P2_Config["Cấu hình AI:<br/>- Model: GPT-4o / Claude 3.5<br/>- Context Server: Running"]:::ai
+        
+        P2_Prompt["PROMPT TẠO MÔI TRƯỜNG:<br/>- Task: Init Python venv<br/>- Tool: uv<br/>- Dir: python/<br/>- Python version: 3.12"]:::ai
+        
+        P2_Action["AI chạy lệnh:<br/>$ uv venv .venv --python 3.12"]:::terminal
+
+        P2_Result["KẾT QUẢ:<br/>- Thư mục .venv đã tạo<br/>- Python 3.12 sẵn sàng<br/>- Đã kích hoạt source"]:::result
+
+        P2_Check1 & P2_Check2 --> P2_Config
+        P2_Config --> P2_Prompt
+        P2_Prompt -- AI thực hiện --> P2_Action
+        P2_Action --> P2_Result
+    end
+
+    Phase2 ==> Phase3
+
+    %% --- GIAI ĐOẠN 3 ---
+    subgraph Phase3 [Giai đoạn 3 - Xây dựng Backend với AI]
+        direction TB
+        
+        P3_Install["Cài thư viện:<br/>$ uv pip install fastapi uvicorn sqlite"]:::terminal
+
+        P3_Context["Nạp Context:<br/>1. product-requirements.md<br/>2. openapi.yaml"]:::process
+        
+        P3_Prompt["PROMPT BUILD APP:<br/>1. Framework: FastAPI<br/>2. DB: SQLite (sns_api.db)<br/>3. Port: 8000<br/>4. STRICT: Tuân thủ openapi.yaml"]:::ai
+        
+        subgraph P3_Generation [Kết quả sinh Mã nguồn và DB]
+            direction LR
+            %% CẬP NHẬT CẤU TRÚC FILE THEO HÌNH ẢNH
+            P3_CodeStructure["<b>Cấu trúc Thư mục Python:</b><br/>python/<br/>├── .venv/<br/>├── __pycache__/<br/>├── database.py<br/>├── digram_mermaid.mermaid<br/>├── main.py<br/>├── models.py<br/>├── README.md<br/>├── requirements.txt<br/>└── sns_api.db"]:::result
+            
+            P3_DB[("sns_api.db<br/>(SQLite)")]:::db
+        end
+
+        P3_Install --> P3_Context
+        P3_Context --> P3_Prompt
+        P3_Prompt -- AI Sinh code --> P3_Generation
+        P3_CodeStructure -.-> P3_DB
+    end
+
+    Phase3 ==> Phase4
+
+    %% --- GIAI ĐOẠN 4 ---
+    subgraph Phase4 [Giai đoạn 4 - Kiểm thử và Vận hành]
+        direction TB
+        P4_Run["Chạy Server:<br/>$ fastapi run main.py"]:::terminal
+        
+        subgraph P4_Docs [Truy cập Tài liệu API]
+            direction LR
+            Docs_Swagger["Swagger UI:<br/>/docs"]:::process
+            Docs_ReDoc["ReDoc:<br/>/redoc"]:::process
+        end
+
+        %% --- PHẦN CHI TIẾT DANH SÁCH API (FULL LIST) ---
+        subgraph API_Inventory [DANH SÁCH TOÀN BỘ API ENDPOINTS]
+            direction TB
+            
+            API_Posts["<b>QUẢN LÝ BÀI VIẾT (POSTS)</b><br/>-----------------------------------<br/>GET /posts<br/>POST /posts<br/>GET /posts/{postId}<br/>PATCH /posts/{postId}<br/>DELETE /posts/{postId}"]:::api_group
+            
+            API_Comments["<b>QUẢN LÝ BÌNH LUẬN (COMMENTS)</b><br/>-----------------------------------<br/>GET /posts/{postId}/comments<br/>POST /posts/{postId}/comments<br/>GET .../comments/{commentId}<br/>PATCH .../comments/{commentId}<br/>DELETE .../comments/{commentId}"]:::api_group
+            
+            API_Likes["<b>TƯƠNG TÁC (LIKES)</b><br/>-----------------------------------<br/>POST /posts/{postId}/likes<br/>DELETE /posts/{postId}/likes"]:::api_group
+        end
+
+        subgraph P4_TestingFlow [Luồng Test Chức năng CRUD]
+            direction TB
+            Test_Step1["1. Tạo bài viết<br/>(POST /posts)"]:::check
+            Test_Step2["2. Kiểm tra ID<br/>(GET /posts/id)"]:::check
+            Test_Step3["3. Xóa bài viết<br/>(DELETE /posts/id)"]:::check
+            
+            Test_Step1 ==> Test_Step2 ==> Test_Step3
+        end
+
+        P4_Run --> P4_Docs
+        P4_Docs --> API_Inventory
+        API_Inventory -.-> P4_TestingFlow
+    end
+
+    Phase4 ==> EndNode([HOÀN THÀNH])
