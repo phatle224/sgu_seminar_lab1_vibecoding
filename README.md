@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GitHub Copilot Vibe Coding Workshop
 
 ![GitHub Copilot Vibe Coding Workshop](./images/banner.png)
@@ -108,3 +109,6 @@ Check out the complete example of each application. They're also vibe-coded with
 - [GitHub Copilot: Custom Instructions](https://code.visualstudio.com/docs/copilot/copilot-customization)
 - [GitHub Copilot: Changing AI Models](https://docs.github.com/en/copilot/using-github-copilot/ai-models/changing-the-ai-model-for-copilot-chat?tool=vscode)
 - [Curated MCP Servers](https://github.com/modelcontextprotocol/servers)
+=======
+# sgu_seminar
+>>>>>>> 385eb4e68a47865f398a772b2b732d51937bcff9
